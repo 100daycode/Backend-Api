@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 use App\Helpers\ResponseFormatter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+<<<<<<< HEAD
+=======
+use Illuminate\Support\Facades\Validator;
+>>>>>>> dev
 
 class APIUserController extends Controller
 {
@@ -84,9 +88,51 @@ class APIUserController extends Controller
         }
     }
 
+<<<<<<< HEAD
     public function logout(Request $request)
     {
         $token = $request->user()->currentAccessToken()->delete();
         return ResponseFormatter::success([$token, 'Token Revoked']);
+=======
+    public function updateProfile(Request $request)
+    {
+        $data = $request->all();
+        $user = Auth::user();
+        $user->update($data);
+
+        return ResponseFormatter::success($user, 'Profile Updated');
+    }
+
+    public function fetch(Request $request)
+    {
+        return ResponseFormatter::success($request->user(), 'Success get profile data');
+    }
+
+    public function updatePhoto(Request $request)
+    {
+        $validator = Validator::make($request->all(), ['file' => 'required|image|max:2048']);
+
+        if ($validator->fails()) {
+            ResponseFormatter::error(
+                ['error' => $validator->errors()],
+                'Update fails',
+                401
+            );
+        }
+
+        if ($request->file('file')) {
+            $file = $request->file->store('assets/user', 'public');
+            $user = Auth::user();
+            $user->update();
+
+            return ResponseFormatter::success([$file], 'File successfuly updated!');
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        $token = $request->user()->currentAccessToken()->delete();
+        return ResponseFormatter::success($token, 'Token Revoked');
+>>>>>>> dev
     }
 }
